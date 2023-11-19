@@ -1,7 +1,5 @@
-import pygame
+import pygame, time, sys
 from random import randint
-import time
-import sys
 
 # 初始化游戏
 pygame.init()
@@ -20,6 +18,15 @@ wg_image = pygame.image.load(r"source/wog2.png")
 wgBoom = pygame.mixer.Sound(r"source/boom.wav")
 bgm = pygame.mixer.Sound(r"source/bgmusic.ogg")
 
+# 定义各种文字
+defaultFont = pygame.font.Font(None ,50)
+
+# 播放音频
+def playSound(sound, volume = 1):
+    channel = pygame.mixer.find_channel(True)
+    channel.set_volume(volume)
+    channel.play(sound)
+
 # 窝瓜类
 class Wogua(pygame.sprite.Sprite):
     def __init__(self):
@@ -33,12 +40,6 @@ class Wogua(pygame.sprite.Sprite):
         self.rect.x = randint(0, screen_width - self.rect.width)
         self.rect.y = randint(0, screen_height - self.rect.height)
 
-# 播放音频
-def playSound(sound, volume = 1):
-    channel = pygame.mixer.find_channel(True)
-    channel.set_volume(volume)
-    channel.play(sound)
-
 # 主循环
 def main():
     tick = 1
@@ -48,7 +49,7 @@ def main():
     global running,score
     while running:
             
-        #fr.tick(tick)
+        fr.tick(tick)
         
         # 处理事件
         for event in pygame.event.get():
@@ -63,14 +64,14 @@ def main():
                     all_wg.update()
                     
         # 计算剩余时间
-        remainTime = 61 - (time.time() - startTime)
+        remainTime = 3 - (time.time() - startTime)
         print(remainTime)
         if remainTime < 0:
             running = False
             break
         
-        # 更新地鼠位置
-        all_wg.update(tick = 30)
+        # 更新窝瓜位置
+        all_wg.update()
 
         # 绘制背景
         screen.blit(background, (0, 0))
@@ -92,20 +93,20 @@ def main():
 # 重新开始
 def replay():
     global running
-    while running==False:
+    while running == False:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 if 250 < mouseX < 400 and 350 < mouseY <400:
-                    score = 0
+                    print("Replay clicked")
                     running = True
-                    print(running)
+                elif 250 < mouseX < 400 and 400 < mouseY < 450:
+                    print("Qiut clicked")
+                    pygame.quit()
+                    sys.exit
             elif event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
-# 定义各种文字
-defaultFont = pygame.font.Font(None ,50)
 
 # 创建窝瓜组
 all_wg = pygame.sprite.Group()
@@ -126,11 +127,12 @@ while running == True:
     # 读取最高记录
     recordFile = open(r"source/record.txt")
     record = int(recordFile.read())
-    print('Best:',record)
+    print('Best:', record)
     recordFile.close()
 
     # 结束页面
     screen.blit(background, (0, 0))
+
     pygame.display.flip()
 
     # 显示分数及历史最高
@@ -139,7 +141,9 @@ while running == True:
         recordFile = open(r"source/record.txt", 'w')
         recordFile.write(str(record)) # 写入最高纪录
         recordFile.close()
-        score_text = defaultFont.render(f"Final Score: {score}<NEW RECORD! >]", True, (255, 255, 255))
+        score_text = defaultFont.render(f"Final Score: {score}", True, (255, 255, 255))
+        congratultion_text = defaultFont.render("NEW RECORD!", True, (255, 0, 0))
+        screen.blit(congratultion_text, (250, 200))
     else:
         score_text = defaultFont.render(f"Final Score: {score}", True, (255, 255, 255))
     screen.blit(score_text, (250, 250))
@@ -150,17 +154,15 @@ while running == True:
     pygame.draw.rect(screen, (0, 0, 0), (250, 350, 150, 50))
     replayButton_text = defaultFont.render("Replay", True, (255, 255, 255))
     screen.blit(replayButton_text, (250, 350))
+
+    pygame.draw.rect(screen, (0, 0, 0), (250, 400, 150, 50))
+    quitButton_text = defaultFont.render("Quit", True, (255, 255, 255))
+    screen. blit(quitButton_text, (250, 400))
+
     pygame.display.flip()
-    time.sleep(2)
     
     replay()
 
 while running == False:
     pygame.quit()
     sys.exit()
-    break
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-        else:
-            pass
