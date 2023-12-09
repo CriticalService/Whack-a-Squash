@@ -22,7 +22,6 @@ quitButton = pygame.transform.scale(pygame.image.load(r"source/quitbutton.png"),
 wgBoom = pygame.mixer.Sound(r"source/boom.wav")
 #bgm = pygame.mixer.Sound(r"source/bgmusic.ogg")
 easteregg = pygame.mixer.Sound(r"source/easteregg.ogg")
-goodjob = pygame.mixer.Sound(r"source/goodjob.wav")
 pygame.mixer.music.load(r"source/bgmusic.ogg")
 
 # 定义各种文字
